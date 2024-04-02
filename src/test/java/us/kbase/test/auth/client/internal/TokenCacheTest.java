@@ -1,4 +1,4 @@
-package us.kbase.test.auth;
+package us.kbase.test.auth.client.internal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 import org.junit.Test;
 
 import us.kbase.auth.AuthToken;
-import us.kbase.auth.TokenCache;
+import us.kbase.auth.client.internal.TokenCache;
 import us.kbase.test.common.TestCommon;
 
 public class TokenCacheTest {

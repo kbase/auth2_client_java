@@ -1,4 +1,4 @@
-package us.kbase.auth;
+package us.kbase.auth.client.internal;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import us.kbase.auth.AuthToken;
 
 /**
  * Caches tokens to avoid network queries to the token provider.
