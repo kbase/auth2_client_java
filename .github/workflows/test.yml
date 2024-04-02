@@ -1,4 +1,4 @@
-name: KBase Auth2 tests
+name: KBase Auth2 Client tests
 
 on:
   pull_request:
