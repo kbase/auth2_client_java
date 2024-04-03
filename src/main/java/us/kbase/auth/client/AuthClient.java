@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.kbase.auth.AuthException;
+import us.kbase.auth.AuthToken;
+import us.kbase.auth.client.internal.TokenCache;
 
 /** A client for the KBase Auth2 authentication server (https://github.com/kbase/auth2).
  * 
@@ -27,6 +30,9 @@ public class AuthClient {
 	// TODO CODE use the built in client in Java 11 when we drop java 8
 	
 	private static final ObjectMapper MAPPER = new ObjectMapper();
+	
+	// make this configurable? Add a builder if so
+	private final TokenCache tokenCache = new TokenCache(1000, 2000); // same as old auth client
 
 	private final URI rootURI;
 	
@@ -47,19 +53,31 @@ public class AuthClient {
 		if (!"https".equals(auth2RootURI.getScheme())) {
 			LoggerFactory.getLogger(getClass()).warn("auth root URI is insecure");
 		}
-		rootURI = auth2RootURI;
-		final Map<String, Object> doc = request(rootURI);
+		final Map<String, Object> doc = request(auth2RootURI);
 		if (!"Authentication Service".equals(doc.get("servicename"))) {
 			throw new AuthException(String.format(
-					"Service at %s is not the authentication service", rootURI));
+					"Service at %s is not the authentication service", auth2RootURI));
+		}
+		try {
+			rootURI = new URI(auth2RootURI.toString() + "/").normalize();
+		} catch (URISyntaxException e) {
+			throw new RuntimeException("this should be impossible", e);
 		}
 	}
 	
 	private Map<String, Object> request(final URI target) throws IOException, AuthException {
-		// tried to use the Jersey client here but kept getting ssl handshake errors if I used
-		// it more than once
+		return request(target, null);
+	}
+	
+	private Map<String, Object> request(final URI target, final String token)
+			throws IOException, AuthException {
+		// tried to use the Jersey client here but kept getting ssl handshake errors if I made
+		// more than one request
 		final HttpURLConnection conn = (HttpURLConnection) target.toURL().openConnection();
 		conn.addRequestProperty("Accept", "application/json");
+		if (token != null) {
+			conn.addRequestProperty("Authorization", token);
+		}
 		try {
 			final int code = conn.getResponseCode();
 			final String res = readResponse(conn, code != 200);
@@ -134,6 +152,31 @@ public class AuthClient {
 	public String getServerVersion() throws IOException, AuthException {
 		final Map<String, Object> doc = request(rootURI);
 		return (String) doc.get("version");
+	}
+	
+	// TODO CODE could do a lot more here later w/ the return data from the auth server
+	//           - token type, custom expiration time, etc.
+	
+	/** Validate a token and get name of the user that owns the token.
+	 * @param token the token.
+	 * @return an authtoken containing the token and the username.
+	 * @throws IOException if an IOException occurs communicating with the auth service.
+	 * @throws AuthException if an auth exception occurs communicating with the auth service.
+	 */
+	public AuthToken validateToken(final String token) throws IOException, AuthException {
+		if (token == null || token.trim().isEmpty()) {
+			throw new IllegalArgumentException("token must be a non-whitespace string");
+		}
+		final AuthToken t = tokenCache.getToken(token);
+		if (t != null) {
+			return t;
+		}
+		final URI target = rootURI.resolve("api/V2/token");
+		final Map<String, Object> res = request(target, token.trim());
+		// assume we're good at this point
+		final AuthToken authToken = new AuthToken(token, (String) res.get("user"));
+		tokenCache.putValidToken(authToken);
+		return authToken;
 	}
 
 }
