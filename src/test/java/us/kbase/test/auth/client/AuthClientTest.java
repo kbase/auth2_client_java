@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import us.kbase.auth.AuthException;
+import us.kbase.auth.AuthToken;
 import us.kbase.auth.client.AuthClient;
 import us.kbase.test.common.TestCommon;
 
@@ -120,5 +121,62 @@ public class AuthClientTest {
 		// TODO TEST use regex matcher in hamcrest 2 when we update
 		// don't anchor right side to allow for pre-release strings
 		assertThat("not a semver", ver.matches("^\\d+\\.\\d+\\.\\d+"), is(true));
+	}
+	
+	@Test
+	public void validateToken() throws Exception {
+		final String token1 = TestCommon.getAuthToken1();
+		final String user1 = TestCommon.getAuthUser1();
+		final String token2 = TestCommon.getAuthToken2();
+		final String user2 = TestCommon.getAuthUser2();
+		assertThat("both tokens are the same", token1.equals(token2), is(false));
+		assertThat("both users are the same", user1.equals(user2), is(false));
+
+		final AuthClient c = AuthClient.from(new URI(TestCommon.getAuthURI()));
+		
+		// First time from service
+		final AuthToken t = c.validateToken(token1);
+		assertThat("incorrect user", t.getUserName(), is(user1));  // for easier debugging
+		assertThat("incorrect auth token", t, is(new AuthToken(token1, user1)));
+		
+		// Second time from cache. No way to actually verify that's what's happening though.
+		// If we refactor to use the same client for every request, can inject the client
+		// and mock it
+		final AuthToken t2 = c.validateToken(token1);
+		assertThat("incorrect auth token", t2, is(new AuthToken(token1, user1)));
+		
+		// First time from service
+		final AuthToken t3 = c.validateToken(token2);
+		assertThat("incorrect user", t3.getUserName(), is(user2));  // for easier debugging
+		assertThat("incorrect auth token", t3, is(new AuthToken(token2, user2)));
+		
+		// Second time from cache.
+		final AuthToken t4 = c.validateToken(token2);
+		assertThat("incorrect auth token", t4, is(new AuthToken(token2, user2)));
+	}
+	
+	@Test
+	public void validateTokenFailEmptyToken() throws Exception {
+		final URI uri = new URI("https://ci.kbase.us/services/auth");
+		validateTokenFail(uri, null, new IllegalArgumentException(
+				"token must be a non-whitespace string"));
+		validateTokenFail(uri, "   \t   ", new IllegalArgumentException(
+				"token must be a non-whitespace string"));
+	}
+	
+	@Test
+	public void validateTokenFailInvalidToken() throws Exception {
+		final URI uri = new URI("https://ci.kbase.us/services/auth");
+		validateTokenFail(uri, "faketoken", new AuthException(
+				"Auth service returned an error: 10020 Invalid token"));
+	}
+	
+	private void validateTokenFail(final URI uri, final String token, final Exception expected) {
+		try {
+			AuthClient.from(uri).validateToken(token);
+			fail("expected exception");
+		} catch (Exception got) {
+			TestCommon.assertExceptionCorrect(got, expected);
+		}
 	}
 }
