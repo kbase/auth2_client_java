@@ -8,4 +8,5 @@ auth_user1 = <user name goes here>
 auth_token2 = <token goes here>
 auth_user2 = <user name goes here>
 
+# existing names from the auth server
 good_users = <comma separated list of user names>

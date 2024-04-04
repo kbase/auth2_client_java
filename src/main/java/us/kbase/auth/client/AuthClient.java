@@ -9,7 +9,12 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthToken;
+import us.kbase.auth.client.internal.StringCache;
 import us.kbase.auth.client.internal.TokenCache;
 
 /** A client for the KBase Auth2 authentication server (https://github.com/kbase/auth2).
@@ -31,8 +37,11 @@ public class AuthClient {
 	
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 	
-	// make this configurable? Add a builder if so
+	// make these configurable? Add a builder if so
 	private final TokenCache tokenCache = new TokenCache(1000, 2000); // same as old auth client
+	private final StringCache userCache = new StringCache(1000, 2000);  // same as old auth client
+	
+	final static Pattern INVALID_USERNAME = Pattern.compile("[^a-z\\d_]+");
 
 	private final URI rootURI;
 	
@@ -164,9 +173,7 @@ public class AuthClient {
 	 * @throws AuthException if an auth exception occurs communicating with the auth service.
 	 */
 	public AuthToken validateToken(final String token) throws IOException, AuthException {
-		if (token == null || token.trim().isEmpty()) {
-			throw new IllegalArgumentException("token must be a non-whitespace string");
-		}
+		checkToken(token);
 		final AuthToken t = tokenCache.getToken(token);
 		if (t != null) {
 			return t;
@@ -177,6 +184,55 @@ public class AuthClient {
 		final AuthToken authToken = new AuthToken(token, (String) res.get("user"));
 		tokenCache.putValidToken(authToken);
 		return authToken;
+	}
+
+	private void checkToken(final String token) {
+		if (token == null || token.trim().isEmpty()) {
+			throw new IllegalArgumentException("token must be a non-whitespace string");
+		}
+	}
+	
+	/** Check if usernames are valid accounts in the auth service.
+	 * @param users the list of usernames to check. If they contain any invalid characters
+	 * (e.g. anything other than a-z, 0-9, or _, an exception will be thrown.
+	 * @param token any valid auth token.
+	 * @return a mapping of each username to whether it's valid or not.
+	 * @throws IOException if an IOException occurs communicating with the auth service.
+	 * @throws AuthException if an auth exception occurs communicating with the auth service.
+	 */
+	public Map<String, Boolean> isValidUserName(final List<String> users, final String token)
+			throws IOException, AuthException {
+		// theoretically someone could submit hundreds of users and hit the url size limit
+		// don't worry about that for now.
+		checkToken(token);
+		if (users == null || users.isEmpty()) {
+			throw new IllegalArgumentException("users cannot be null or empty");
+		}
+		final List<String> badlist = new LinkedList<String>();
+		final Map<String, Boolean> result = new HashMap<>();
+		for (String user: users) {
+			if (user == null || user.trim().isEmpty()) {
+				throw new IllegalArgumentException("each user must be a non-whitespace string");
+			}
+			user = user.trim();
+			final Matcher m = INVALID_USERNAME.matcher(user);
+			if (m.find()) {
+				// this matches the prior behavior, but later could have an validity enum
+				// one for bad chars, one for does not exist
+				throw new IllegalArgumentException(
+						"username " + user + " has invalid character: " + m.group(0));
+			}
+			if (userCache.hasString(user)) {
+				result.put(user, true);
+			} else {
+				badlist.add(user);
+			}
+		}
+		final URI target = rootURI.resolve("api/V2/users/?list=" + String.join(",", badlist));
+		final Map<String, Object> res = request(target, token.trim());
+		res.keySet().stream().forEach(u -> userCache.putString(u));
+		badlist.stream().forEach(u -> result.put(u, res.containsKey(u)));
+		return result;
 	}
 
 }
