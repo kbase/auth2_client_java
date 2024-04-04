@@ -22,8 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthToken;
-import us.kbase.auth.client.internal.StringCache;
-import us.kbase.auth.client.internal.TokenCache;
+import us.kbase.auth.client.cache.StringCache;
+import us.kbase.auth.client.cache.TokenCache;
 
 /** A client for the KBase Auth2 authentication server (https://github.com/kbase/auth2).
  * 
