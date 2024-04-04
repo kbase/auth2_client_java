@@ -11,7 +11,6 @@ on:
     # run workflow when merging to main or develop
     branches:
       - main
-      - master
       - develop
 
 jobs:
@@ -26,10 +25,10 @@ jobs:
           - java: '11'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: ${{matrix.java}}

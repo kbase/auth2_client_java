@@ -29,6 +29,7 @@ public class TokenCacheTest {
 		failConstruct(0, 1, "size and maxsize must be > 0");
 		failConstruct(1, 0, "size and maxsize must be > 0");
 		failConstruct(2, 1, "size must be < maxsize");
+		failConstruct(3, 3, "size must be < maxsize");
 	}
 	
 	private void failConstruct(final int size, final int maxsize, final String expected) {

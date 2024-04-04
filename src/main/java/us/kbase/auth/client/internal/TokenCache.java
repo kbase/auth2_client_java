@@ -45,7 +45,7 @@ public class TokenCache {
 	
 	/**
 	 * Create a new TokenCache.
-	 * @param size the nominal size of the cache in tokens
+	 * @param size the nominal size of the cache in tokens, which must be < maxsize
 	 * @param maxsize the maximum size of the cache in tokens
 	 */
 	public TokenCache(int size, int maxsize) {
