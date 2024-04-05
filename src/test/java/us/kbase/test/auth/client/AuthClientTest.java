@@ -118,6 +118,12 @@ public class AuthClientTest {
 			TestCommon.assertExceptionCorrect(got, err);
 		}
 	}
+	
+	@Test
+	public void constructAndGetURI() throws Exception {
+		final AuthClient c = AuthClient.from(new URI("https://ci.kbase.us/services/auth"));
+		assertThat("incorrect uri", c.getURI(), is(new URI("https://ci.kbase.us/services/auth/")));
+	}
 
 	@Test
 	public void getServerVersion() throws Exception {
