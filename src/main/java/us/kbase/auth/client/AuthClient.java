@@ -100,8 +100,9 @@ public class AuthClient {
 
 	private String truncate(String res) {
 		// Testing this exactly would require a mockserver. Don't worry about it for now.
-		if (res.length() > MAX_RESPONSE_LEN) {
-			res = res.substring(0, MAX_RESPONSE_LEN - 3) + "...";
+		if (res.codePointCount(0, res.length()) > MAX_RESPONSE_LEN) {
+			final int index = res.offsetByCodePoints(0, MAX_RESPONSE_LEN - 3);
+			res = res.substring(0, index) + "...";
 		}
 		return res;
 	}
