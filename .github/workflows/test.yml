@@ -37,8 +37,8 @@ jobs:
         env:
            KBASE_CI_TOKEN: ${{ secrets.KBASE_CI_TOKEN }}
            KBASE_CI_TOKEN2: ${{ secrets.KBASE_CI_TOKEN2 }}
-        run:
-           cp -n test.cfg.example test.cfg
+        run: |
+           cp test.cfg.example test.cfg
            sed -i "s#^auth_token1 =.*#auth_token1 = $KBASE_CI_TOKEN#" test.cfg
            sed -i "s#^auth_token2 =.*#auth_token2 = $KBASE_CI_TOKEN2#" test.cfg
            sed -i "s#^auth_user1 =.*#auth_user1 = kbase_bot#" test.cfg
