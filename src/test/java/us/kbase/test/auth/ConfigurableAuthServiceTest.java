@@ -20,6 +20,7 @@ import us.kbase.auth.AuthToken;
 import us.kbase.auth.ConfigurableAuthService;
 import us.kbase.test.common.TestCommon;
 
+@SuppressWarnings("deprecation")
 public class ConfigurableAuthServiceTest {
 
 	
@@ -107,5 +108,17 @@ public class ConfigurableAuthServiceTest {
 				allUsers, new AuthToken(token1, "fakeuser"));
 		
 		assertThat("incorrect users", res, is(expected));
+	}
+	
+	@Test
+	public void login() throws Exception {
+		try {
+			new ConfigurableAuthService(
+					new AuthConfig().withKBaseAuthServerURL(new URL(TestCommon.getAuthURI())))
+			.login(null, null);
+			fail("expected exception");
+		} catch (UnsupportedOperationException got) {
+			// test passes
+		}
 	}
 }

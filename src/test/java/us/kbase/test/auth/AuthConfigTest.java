@@ -11,6 +11,7 @@ import org.junit.Test;
 import us.kbase.auth.AuthConfig;
 import us.kbase.test.common.TestCommon;
 
+@SuppressWarnings("deprecation")
 public class AuthConfigTest {
 	
 	@Test

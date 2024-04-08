@@ -15,6 +15,7 @@ import us.kbase.auth.client.AuthClient;
  * @author wjriehl
  * @author gaprice@lbl.gov
  */
+@Deprecated
 public class ConfigurableAuthService {
 	
 	private final AuthClient client;
@@ -84,6 +85,19 @@ public class ConfigurableAuthService {
 	public AuthToken validateToken(final String tokenStr)
 			throws IOException, AuthException {
 		return client.validateToken(tokenStr);
+	}
+	
+	/** Throws {@link UnsupportedOperationException}.
+	 * @param userName ignore
+	 * @param password ignore
+	 * @return nothing useful
+	 * @throws AuthException never
+	 * @throws IOException never
+	 */
+	@Deprecated
+	public AuthUser login(String userName, String password)
+			throws AuthException, IOException {
+		throw new UnsupportedOperationException();
 	}
 	
 }
