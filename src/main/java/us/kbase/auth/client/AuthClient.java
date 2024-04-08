@@ -48,6 +48,7 @@ public class AuthClient {
 	/** Create the client.
 	 * @param auth2RootURI the root URI of the auth service - for example,
 	 * https://appdev.kbase.us/services/auth
+	 * @return the client.
 	 * @throws IOException if an IOException occurs communicating with the auth service.
 	 * @throws AuthException if an auth exception occurs communicating with the auth service.
 	 */

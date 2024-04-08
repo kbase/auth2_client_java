@@ -5,12 +5,10 @@
 plugins {
 	id 'java'
 	id 'jacoco'
+	id 'maven-publish'
 }
 
-// TODO NOW jar build
-// TODO NOW javadoc build
-// TODO NOW publish javadocs on release
-// TODO NOW publish jar on release
+group = 'com.github.kbase'
 
 repositories {
 	mavenCentral()
@@ -20,6 +18,11 @@ compileJava {
 	// TODO BUILD remove when we no longer support java 8, use `options.release = 11 if necessary`
 	java.sourceCompatibility = JavaVersion.VERSION_1_8
 	java.targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+java {
+	withSourcesJar()
+	withJavadocJar()
 }
 
 test {
@@ -42,6 +45,14 @@ javadoc {
 	options {
 		// I don't know why this isn't working, but it's not worth spending time on right now
 		links "https://docs.oracle.com/javase/8/docs/api/"
+	}
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+		from components.java
+		}
 	}
 }
 
