@@ -54,7 +54,6 @@ dependencies {
 	// using older dependencies to not force upgrades on services that might not be able to
 	// handle them. Need to upgrade the services and then upgrade here
 	implementation 'ch.qos.logback:logback-classic:1.1.2'
-	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.5.4'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.5.4'
 	implementation 'org.slf4j:slf4j-api:1.7.25'
 
