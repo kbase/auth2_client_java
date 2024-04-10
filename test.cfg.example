@@ -1,0 +1,11 @@
+[auth_client_test]
+
+auth_url = https://ci.kbase.us/services/auth/
+
+auth_token1 = <token goes here>
+auth_user1 = <user name goes here>
+
+auth_token2 = <token goes here>
+auth_user2 = <user name goes here>
+
+good_users = <comma separated list of user names>
