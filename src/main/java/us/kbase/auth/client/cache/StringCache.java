@@ -1,4 +1,4 @@
-package us.kbase.auth.client.internal;
+package us.kbase.auth.client.cache;
 
 import java.util.ArrayList;
 import java.util.Collections;

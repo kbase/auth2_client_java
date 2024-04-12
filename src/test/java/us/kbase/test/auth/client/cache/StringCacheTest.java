@@ -1,4 +1,4 @@
-package us.kbase.test.auth.client.internal;
+package us.kbase.test.auth.client.cache;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 
 import org.junit.Test;
 
-import us.kbase.auth.client.internal.StringCache;
+import us.kbase.auth.client.cache.StringCache;
 import us.kbase.test.common.TestCommon;
 
 public class StringCacheTest {

@@ -1,4 +1,4 @@
-package us.kbase.auth.client.internal;
+package us.kbase.auth.client.cache;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
