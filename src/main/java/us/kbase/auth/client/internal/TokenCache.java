@@ -116,7 +116,7 @@ public class TokenCache {
 			}
 			Collections.sort(dts);
 			for(int i = size; i < dts.size(); i++) {
-				cache.remove(dts.get(i).token);
+				cache.remove(dts.get(i).tokenHash);
 			}
 		}
 	}
@@ -135,11 +135,11 @@ class UserDate {
 
 class DateToken implements Comparable<DateToken>{
 
-	final String token;
+	final String tokenHash;
 	final Date date;
 	
 	DateToken(long date, String token) {
-		this.token = token;
+		this.tokenHash = token;
 		this.date = new Date(date);
 	}
 	

@@ -5,7 +5,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -179,4 +184,74 @@ public class AuthClientTest {
 			TestCommon.assertExceptionCorrect(got, expected);
 		}
 	}
+	
+	@Test
+	public void isValidUserName() throws Exception {
+		final String token1 = TestCommon.getAuthToken1();
+		final List<String> goodUsers = TestCommon.getGoodUsers();
+
+		final AuthClient c = AuthClient.from(new URI(TestCommon.getAuthURI()));
+		
+		final List<String> badUsers = Arrays.asList(
+				"superfakeuserthatdoesntexistihope",
+				"anothersuperfakeuserrighthereimfake");
+		
+		final List<String> allUsers = new LinkedList<>(badUsers);
+		goodUsers.stream().forEach(u -> allUsers.add(String.format("  \t   %s  ", u)));
+		
+		final Map<String, Boolean> expected = new HashMap<>();
+		goodUsers.stream().forEach(u -> expected.put(u.trim(), true));
+		badUsers.stream().forEach(u -> expected.put(u, false));
+				
+		final Map<String, Boolean> res = c.isValidUserName(allUsers, token1);
+		
+		assertThat("incorrect users", res, is(expected));
+		
+		// 2nd time from cache. Again no good way to test this w/o a client mock
+		final Map<String, Boolean> res2 = c.isValidUserName(allUsers, token1);
+		
+		assertThat("incorrect users", res2, is(expected));
+	}
+	
+	@Test
+	public void isValidUserNameFailBadArgs() throws Exception {
+		final URI uri = new URI(TestCommon.getAuthURI());
+		final List<String> u = Arrays.asList("u");
+		isValidUserNameFail(uri, null, "foo",
+				new IllegalArgumentException("users cannot be null or empty"));
+		isValidUserNameFail(uri, Collections.emptyList(), "foo",
+				new IllegalArgumentException("users cannot be null or empty"));
+		isValidUserNameFail(uri, Arrays.asList("a", null), "foo",
+				new IllegalArgumentException("each user must be a non-whitespace string"));
+		isValidUserNameFail(uri, Arrays.asList("a", "   "), "foo",
+				new IllegalArgumentException("each user must be a non-whitespace string"));
+		isValidUserNameFail(uri, Arrays.asList("a", "   foo*bar "), "foo",
+				new IllegalArgumentException("username foo*bar has invalid character: *"));
+		isValidUserNameFail(uri, u, null,
+				new IllegalArgumentException("token must be a non-whitespace string"));
+		isValidUserNameFail(uri, u, "   \t   ",
+				new IllegalArgumentException("token must be a non-whitespace string"));
+	}
+	
+	@Test
+	public void isValidUserNameFailBadToken() throws Exception {
+		final URI uri = new URI(TestCommon.getAuthURI());
+		final List<String> u = Arrays.asList("u");
+		isValidUserNameFail(uri, u, "badtoken", new AuthException(
+				"Auth service returned an error: 10020 Invalid token"));
+	}
+	
+	private void isValidUserNameFail(
+			final URI uri,
+			final List<String> usernames,
+			final String token,
+			final Exception expected) {
+		try {
+			AuthClient.from(uri).isValidUserName(usernames, token);
+			fail("expected exception");
+		} catch (Exception got) {
+			TestCommon.assertExceptionCorrect(got, expected);
+		}
+	}
+	
 }
