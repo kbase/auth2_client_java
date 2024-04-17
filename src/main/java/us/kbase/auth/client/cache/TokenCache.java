@@ -127,7 +127,6 @@ class UserDate {
 	long date;
 	
 	UserDate(String user) {
-		super();
 		this.user = user;
 		this.date = new Date().getTime();
 	}

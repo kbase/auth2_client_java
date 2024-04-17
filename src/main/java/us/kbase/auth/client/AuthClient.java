@@ -152,6 +152,13 @@ public class AuthClient {
 		}
 		return restext.toString();
 	}
+	
+	/** Get the auth service URI.
+	 * @return the URI.
+	 */
+	public URI getURI() {
+		return rootURI;
+	}
 
 	/** Get the version of the auth server with which this client communicates.
 	 * @return the server version.
