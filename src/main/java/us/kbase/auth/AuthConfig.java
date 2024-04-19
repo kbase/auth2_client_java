@@ -12,6 +12,7 @@ import java.net.URL;
  * @author gaprice@lbl.gov
  *
  */
+@Deprecated
 public class AuthConfig {
 	
 	private static final String DEFAULT_KBASE_AUTH_SERVER_URL =
