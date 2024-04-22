@@ -25,7 +25,7 @@ https://javadoc.jitpack.io/com/github/kbase/auth2_client_java/0.5.0/javadoc/
 
 ## Usage
 
-If backwards compatibility with old code is required, use the
+If backwards compatibility with versions of the client prior to 0.5.0 is required, use the
 `us.kbase.auth.ConfigurableAuthService` class. Otherwise use the
 `us.kbase.auth.client.AuthClient` class.
 
@@ -62,5 +62,3 @@ Copy `test.cfg.example` to `test.cfg` and fill it in appropriately. Then:
 
 The prior version of the client is available at https://github.com/kbase/auth for source code
 and in https://github.com/kbase/jars for built jars.
-
-
