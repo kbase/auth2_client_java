@@ -38,7 +38,7 @@ public class StringCache {
 	
 	/**
 	 * Create a new StringCache.
-	 * @param size the nominal size of the cache in strings, which must be < maxsize
+	 * @param size the nominal size of the cache in strings, which must be &lt; maxsize
 	 * @param maxsize the maximum size of the cache in strings
 	 */
 	public StringCache(int size, int maxsize) {
@@ -55,7 +55,7 @@ public class StringCache {
 	
 	/**
 	 * Set the lifetime of a string in the cache.
-	 * @param seconds the lifetime of a string
+	 * @param seconds the lifetime of a string.
 	 */
 	public void setExpiry(final long seconds) {
 		if (seconds < 1) {
@@ -66,6 +66,7 @@ public class StringCache {
 	
 	/**
 	 * Get the lifetime of a string in the cache.
+	 * @return the lifetime of a string.
 	 */
 	public long getExpiry() {
 		return expiry;
