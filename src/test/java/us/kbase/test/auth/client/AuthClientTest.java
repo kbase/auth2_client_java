@@ -143,6 +143,9 @@ public class AuthClientTest {
 		assertThat("both tokens are the same", token1.equals(token2), is(false));
 		assertThat("both users are the same", user1.equals(user2), is(false));
 
+		System.out.println("user1: " + user1);
+		System.out.println("user2: " + user2);
+
 		final AuthClient c = AuthClient.from(new URI(TestCommon.getAuthURI()));
 		
 		// First time from service
