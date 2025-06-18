@@ -63,10 +63,10 @@ public class AuthClientTest {
 		// this test is fragile, the exception message might need tweaking
 		final String text = "<!doctype html><html lang=\"en\"><head>"
 				+ "<script async src=\"https://www.googletagmanager.com/gtag/js?...";
-		final String err = "Failed reading from auth url https://ci.kbase.us/service/auth/ "
+		final String err = "Failed reading from auth url https://ci.kbase.us/services/auth/ "
 				+ "with response code 200 - response is not JSON: " + text;
 		assertThat("text is too long", text.length(), is(100));
-		failConstruct(new URI("https://ci.kbase.us/service/auth/"), new AuthException(err));
+		failConstruct(new URI("https://ci.kbase.us/services/auth/"), new AuthException(err));
 		assertThat("no logs", LOGS.isEmpty(), is(true));
 	}
 	
