@@ -63,10 +63,10 @@ public class AuthClientTest {
 		// this test is fragile, the exception message might need tweaking
 		final String text = "<!doctype html><html lang=\"en\"><head>"
 				+ "<script async src=\"https://www.googletagmanager.com/gtag/js?...";
-		final String err = "Failed reading from auth url https://ci.kbase.us/services/authx/ "
+		final String err = "Failed reading from auth url https://ci.kbase.us/service/auth/ "
 				+ "with response code 200 - response is not JSON: " + text;
 		assertThat("text is too long", text.length(), is(100));
-		failConstruct(new URI("https://ci.kbase.us/services/authx/"), new AuthException(err));
+		failConstruct(new URI("https://ci.kbase.us/service/auth/"), new AuthException(err));
 		assertThat("no logs", LOGS.isEmpty(), is(true));
 	}
 	
@@ -142,9 +142,6 @@ public class AuthClientTest {
 		final String user2 = TestCommon.getAuthUser2();
 		assertThat("both tokens are the same", token1.equals(token2), is(false));
 		assertThat("both users are the same", user1.equals(user2), is(false));
-
-		System.out.println("user1: " + user1);
-		System.out.println("user2: " + user2);
 
 		final AuthClient c = AuthClient.from(new URI(TestCommon.getAuthURI()));
 		
