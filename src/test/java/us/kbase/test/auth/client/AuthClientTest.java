@@ -61,8 +61,8 @@ public class AuthClientTest {
 	@Test
 	public void constructFailBadUrl200() throws Exception {
 		// this test is fragile, the exception message might need tweaking
-		final String text = "<!doctype html><html lang=\"en\"><head>"
-				+ "<script async src=\"https://www.googletagmanager.com/gtag/js?...";
+		final String text = "<!doctype html>\\n<html>\\n<head>\\n    "
+				+ "<title>Example Domain</title>\\n\\n    <meta charset=\\\"utf-8\\\" />\\n   ...";
 		final String err = "Failed reading from auth url https://example.org "
 				+ "with response code 200 - response is not JSON: " + text;
 		assertThat("text is too long", text.length(), is(100));
