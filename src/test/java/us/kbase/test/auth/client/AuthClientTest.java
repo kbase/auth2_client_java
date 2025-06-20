@@ -65,7 +65,7 @@ public class AuthClientTest {
 				+ "<title>Example Domain</title>\\n\\n    <meta charset=\\\"utf-8\\\" />\\n   ...";
 		final String err = "Failed reading from auth url https://example.org "
 				+ "with response code 200 - response is not JSON: " + text;
-		assertThat("text is too long", text.length(), is(100));
+		assertThat("text is too long", text.length(), is(108));
 		failConstruct(new URI("https://example.org"), new AuthException(err));
 		assertThat("no logs", LOGS.isEmpty(), is(true));
 	}
