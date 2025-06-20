@@ -62,7 +62,7 @@ dependencies {
 	// handle them. Need to upgrade the services and then upgrade here
 	implementation 'ch.qos.logback:logback-classic:1.1.2'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.5.4'
-	implementation 'org.slf4j:slf4j-api:1.7.25'
+	implementation 'org.slf4j:slf4j-api:2.0.17'
 
 	testImplementation 'org.ini4j:ini4j:0.5.2'
 	testImplementation 'junit:junit:4.12'
